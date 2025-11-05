@@ -1,0 +1,4 @@
+FROM alpine:latest
+COPY test-script.sh /test-script.sh
+RUN chmod +x /test-script.sh
+ENTRYPOINT ["/test-script.sh"]

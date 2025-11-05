@@ -1,0 +1,146 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opensign-mongo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: opensign-mongo
+  template:
+    metadata:
+      labels:
+        app: opensign-mongo
+    spec:
+      containers:
+      - name: mongo
+        image: mongo:6.0
+        ports:
+        - containerPort: 27017
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          value: "admin"
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          value: "password"
+        volumeMounts:
+        - name: mongo-storage
+          mountPath: /data/db
+      volumes:
+      - name: mongo-storage
+        emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: opensign-mongo-service
+spec:
+  selector:
+    app: opensign-mongo
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opensign-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: opensign-backend
+  template:
+    metadata:
+      labels:
+        app: opensign-backend
+    spec:
+      containers:
+      - name: backend
+        image: gcr.io/esign-alpha-474811/opensign-backend:latest
+        ports:
+        - containerPort: 8081
+        env:
+        - name: APP_ID
+          value: "opensign"
+        - name: SERVER_URL
+          value: "http://opensign-backend-service:8081/app"
+        - name: MASTER_KEY
+          value: "your_secure_master_key_here"
+        - name: DATABASE_URI
+          value: "mongodb://admin:password@opensign-mongo-service:27017/opensign?authSource=admin"
+        - name: PORT
+          value: "8081"
+        - name: USE_LOCAL
+          value: "true"
+        volumeMounts:
+        - name: backend-logs
+          mountPath: /app/logs
+      volumes:
+      - name: backend-logs
+        emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: opensign-backend-service
+spec:
+  selector:
+    app: opensign-backend
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opensign-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: opensign-frontend
+  template:
+    metadata:
+      labels:
+        app: opensign-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: gcr.io/esign-alpha-474811/opensign-frontend:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: REACT_APP_SERVERURL
+          value: "http://opensign-backend-service:8081/app"
+        - name: REACT_APP_APPID
+          value: "opensign"
+        - name: PORT
+          value: "80"
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          # Fix the nginx configuration
+          sed -i 's/\$${PORT:-8080}/80/g' /etc/nginx/nginx.conf.template
+          envsubst '${PORT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
+          nginx -g 'daemon off;'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: opensign-frontend-service
+spec:
+  selector:
+    app: opensign-frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer

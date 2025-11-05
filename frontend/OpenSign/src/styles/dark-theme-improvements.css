@@ -1,0 +1,143 @@
+/* Zoho Dark Theme Improvements for OpenSign */
+
+/* Better disabled button styling for dark mode */
+[data-theme="opensigndark"] {
+  /* Primary button disabled state */
+  .op-btn-primary:disabled {
+    background-color: #333333 !important; /* Zoho Dark Grey */
+    color: #FFFFFF !important;
+    border-color: #333333 !important;
+    opacity: 1 !important;
+    cursor: not-allowed !important;
+  }
+
+  .op-btn-primary:disabled:hover {
+    background-color: #333333 !important;
+    color: #FFFFFF !important;
+    border-color: #333333 !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Secondary button disabled state */
+  .op-btn-secondary:disabled {
+    background-color: #2A2A2A !important;
+    color: #F9B21D !important; /* Zoho Yellow for better visibility */
+    border-color: #444444 !important;
+    opacity: 1 !important;
+    cursor: not-allowed !important;
+  }
+
+  /* Ghost button disabled state */
+  .op-btn-ghost:disabled {
+    background-color: transparent !important;
+    color: #F9B21D !important; /* Zoho Yellow */
+    border-color: #444444 !important;
+    opacity: 1 !important;
+    cursor: not-allowed !important;
+  }
+
+  /* Better icon visibility for various states */
+  .icon-disabled,
+  .fa-light.text-gray-400,
+  .fa-light.text-gray-500 {
+    color: #F9B21D !important; /* Zoho Yellow for disabled icons */
+  }
+
+  .icon-visible,
+  .nav-icon,
+  .folder-icon {
+    color: #FFFFFF !important;
+  }
+
+  /* Muted/inactive icons with better visibility */
+  .muted-icon,
+  .inactive-icon {
+    color: #F9B21D !important; /* Zoho Yellow */
+  }
+
+  /* Hover states for better interactivity */
+  .hover\\:bg-gray-200:hover {
+    background-color: #089949 !important; /* Zoho Green */
+  }
+
+  .hover\\:text-gray-600:hover {
+    color: #FFFFFF !important;
+  }
+
+  /* Form elements in disabled state */
+  .op-input:disabled,
+  .op-select:disabled,
+  .op-textarea:disabled {
+    background-color: #2A2A2A !important;
+    color: #F9B21D !important; /* Zoho Yellow */
+    border-color: #444444 !important;
+    cursor: not-allowed !important;
+  }
+
+  /* Dropdown menu items */
+  .dropdown-item {
+    color: #FFFFFF !important;
+  }
+
+  .dropdown-item:hover {
+    background-color: #089949 !important; /* Zoho Green */
+    color: #FFFFFF !important;
+  }
+
+  /* Better text contrast for various elements */
+  .text-gray-600 {
+    color: #FFFFFF !important;
+  }
+
+  .text-gray-500 {
+    color: #F9B21D !important; /* Zoho Yellow */
+  }
+
+  .text-gray-400 {
+    color: #F9B21D !important; /* Zoho Yellow */
+  }
+
+  /* Status indicators with better visibility */
+  .status-badge {
+    box-shadow: 0 2px 4px rgba(228, 37, 39, 0.3) !important; /* Zoho Red shadow */
+  }
+
+  /* Tooltip improvements */
+  .op-tooltip {
+    background-color: #089949 !important; /* Zoho Green */
+    color: #FFFFFF !important;
+    border-color: #226DB4 !important; /* Zoho Blue */
+  }
+
+  /* Card and panel borders */
+  .op-card,
+  .border-gray-300 {
+    border-color: #226DB4 !important; /* Zoho Blue */
+  }
+
+  /* Loading states */
+  .opacity-50 {
+    opacity: 0.7 !important;
+  }
+
+  /* Focus states for better accessibility */
+  .op-btn:focus-visible,
+  .op-input:focus-visible,
+  .op-select:focus-visible {
+    outline: 2px solid #226DB4 !important; /* Zoho Blue */
+    outline-offset: 2px !important;
+  }
+}
+
+/* Ensure these styles don't affect light mode */
+[data-theme="opensigncss"] {
+  /* Keep original colors for light mode */
+  .icon-disabled {
+    color: #9CA3AF;
+  }
+  
+  .icon-visible {
+    color: #6B7280;
+  }
+}

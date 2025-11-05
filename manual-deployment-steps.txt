@@ -1,0 +1,50 @@
+# Manual Deployment Steps for OpenSign
+
+## Step 1: Fix the entrypoint.sh file
+1. Navigate to the frontend directory:
+   cd frontend/OpenSign
+
+2. Remove the existing entrypoint.sh file:
+   rm entrypoint.sh (on Windows: del entrypoint.sh)
+
+3. Create a new entrypoint.sh file with the following content:
+   #!/bin/sh
+
+   # Create env.js file with environment variables
+   echo "window.env = {" > /usr/share/nginx/html/env.js
+   echo "  REACT_APP_SERVERURL: \"$REACT_APP_SERVERURL\"," >> /usr/share/nginx/html/env.js
+   echo "  REACT_APP_APPID: \"$REACT_APP_APPID\"" >> /usr/share/nginx/html/env.js
+   echo "};" >> /usr/share/nginx/html/env.js
+
+   # Process nginx configuration with environment variables
+   envsubst '${PORT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
+
+   # Start nginx
+   exec nginx -g 'daemon off;'
+
+4. Convert line endings to Unix format (LF only, not CRLF)
+
+## Step 2: Build the Docker image
+1. From the frontend/OpenSign directory, run:
+   docker build -t gcr.io/esign-alpha/opensign-frontend:latest -f Dockerfile.simple .
+
+## Step 3: Push the Docker image
+1. Push the image to Google Container Registry:
+   docker push gcr.io/esign-alpha/opensign-frontend:latest
+
+## Step 4: Apply the Kubernetes deployment
+1. Navigate back to the project root:
+   cd ../..
+
+2. Apply the fixed Kubernetes deployment:
+   kubectl apply -f k8s-deployment-fixed.yaml
+
+## Step 5: Monitor the deployment
+1. Check the status of the pods:
+   kubectl get pods
+
+2. If any pods are still crashing, check the logs:
+   kubectl logs <pod-name>
+
+## Expected Outcome
+After completing these steps, the frontend pod should start successfully without the "exec format error" and the CrashLoopBackOff state should be resolved.

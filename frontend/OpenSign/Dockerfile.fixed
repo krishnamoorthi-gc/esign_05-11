@@ -1,0 +1,54 @@
+# Use an official Node runtime as the base image
+FROM node:20-alpine AS build
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Install curl and other dependencies needed for the build process
+RUN apk add --no-cache curl
+
+# Copy package.json and package-lock.json first to leverage Docker cache
+COPY package*.json ./
+
+# Install application dependencies including dev dependencies needed for build
+RUN npm ci
+
+# Copy the current directory contents into the container
+COPY . .
+
+# Define environment variables
+ENV NODE_ENV=production
+ENV GENERATE_SOURCEMAP=false
+
+# Build the application
+RUN npm run build
+
+# Use a lightweight web server to serve the application
+FROM nginx:alpine
+
+# Install gettext for envsubst command
+RUN apk add --no-cache gettext
+
+# Copy the build output to the nginx html directory
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Copy nginx configuration template
+COPY nginx.conf.template /etc/nginx/nginx.conf.template
+
+# Make port 80 available to the world outside this container
+EXPOSE 80
+
+# Inject env.js loader into index.html
+RUN sed -i '/<head>/a\<script src="/env.js"></script>' /usr/share/nginx/html/index.html
+
+# Create env.js file with environment variables at startup
+RUN echo '#!/bin/sh' > /entrypoint.sh && \
+    echo 'echo "window.env = {" > /usr/share/nginx/html/env.js' >> /entrypoint.sh && \
+    echo 'echo "  REACT_APP_SERVERURL: \"'$REACT_APP_SERVERURL'\"," >> /usr/share/nginx/html/env.js' >> /entrypoint.sh && \
+    echo 'echo "  REACT_APP_APPID: \"'$REACT_APP_APPID'\"" >> /usr/share/nginx/html/env.js' >> /entrypoint.sh && \
+    echo 'echo "};\" >> /usr/share/nginx/html/env.js' >> /entrypoint.sh && \
+    echo 'envsubst '' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf' >> /entrypoint.sh && \
+    echo 'exec nginx -g "daemon off;"' >> /entrypoint.sh && \
+    chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]

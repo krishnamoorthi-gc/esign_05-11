@@ -1,0 +1,24 @@
+{
+  "name": "opensign-stripe-scripts",
+  "version": "1.0.0",
+  "description": "Scripts for setting up and validating Stripe integration in OpenSign",
+  "main": "validate-stripe-config.js",
+  "scripts": {
+    "validate": "node validate-stripe-config.js",
+    "setup-products": "node setup-stripe-products.js",
+    "test-webhook": "node test-webhook.js",
+    "setup": "npm run setup-products && npm run validate"
+  },
+  "keywords": [
+    "stripe",
+    "opensign",
+    "payment",
+    "subscription"
+  ],
+  "author": "OpenSign",
+  "license": "MIT",
+  "dependencies": {
+    "stripe": "^14.0.0",
+    "dotenv": "^16.0.0"
+  }
+}

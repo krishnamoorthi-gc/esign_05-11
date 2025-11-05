@@ -1,0 +1,40 @@
+{
+  "name": "opensign",
+  "version": "1.0.6",
+  "description": "Free and open source alternative to DocuSign",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install",
+    "lint-staged-changes": "lint-staged",
+    "dev": "concurrently \"npm run dev --prefix backend/OpenSignServer\" \"npm run dev --prefix frontend/OpenSign\"",
+    "dev:backend": "npm run dev --prefix backend/OpenSignServer",
+    "dev:frontend": "npm run dev --prefix frontend/OpenSign"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/opensignlabs/opensign"
+  },
+  "keywords": [
+    "digital",
+    "signature",
+    "e-signature",
+    "docusign",
+    "electronic",
+    "signature"
+  ],
+  "author": "OpenSignLabs",
+  "license": "AGPL-3.0",
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "husky": "^8.0.0",
+    "lint-staged": "^15.1.0",
+    "nodemon": "^3.1.0",
+    "prettier": "3.1.0"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "mongodb": "^6.20.0",
+    "nodemailer": "^7.0.6"
+  }
+}

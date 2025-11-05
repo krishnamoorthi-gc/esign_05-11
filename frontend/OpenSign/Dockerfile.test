@@ -1,0 +1,14 @@
+# Use the same base image as our frontend
+FROM nginx:alpine
+
+# Install gettext for envsubst command
+RUN apk add --no-cache gettext
+
+# Copy the test entrypoint script
+COPY test-entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Copy nginx configuration template
+COPY nginx.conf.template /etc/nginx/nginx.conf.template
+
+ENTRYPOINT ["/entrypoint.sh"]

@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:6.0
+    container_name: opensign-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+
+  backend:
+    build:
+      context: ./backend/OpenSignServer
+      dockerfile: Dockerfile
+    container_name: opensign-backend
+    ports:
+      - "8081:8081"
+    environment:
+      - APP_ID=opensign
+      - SERVER_URL=http://YOUR_EXTERNAL_IP:8081/app
+      - MASTER_KEY=your_secure_master_key_here
+      - DATABASE_URI=mongodb://admin:password@mongo:27017/opensign?authSource=admin
+      - PORT=8081
+      - USE_LOCAL=true
+      - SMTP_ENABLE=true
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=587
+      - SMTP_USER_EMAIL=vatgcbs15@gmail.com
+      - SMTP_PASS="eacb ytol wvvz nzcu"
+    depends_on:
+      - mongo
+    volumes:
+      - ./backend/logs:/app/logs
+
+  frontend:
+    build:
+      context: ./frontend/OpenSign
+      dockerfile: Dockerfile
+    container_name: opensign-frontend
+    ports:
+      - "80:80"
+    environment:
+      - REACT_APP_SERVERURL=http://YOUR_BACKEND_EXTERNAL_IP:8081/app
+      - REACT_APP_APPID=opensign
+    depends_on:
+      - backend
+
+volumes:
+  mongo-data:
