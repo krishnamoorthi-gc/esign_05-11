@@ -201,16 +201,92 @@ This project includes Docker configuration for both development and production d
      opensign-frontend
    ```
 
-#### Deploying Without Docker
+#### Deploying Without Docker on VPS Server
 
-You can deploy OpenSign without using Docker containers by using our provided deployment scripts:
+For production deployments on VPS servers without Docker, OpenSign provides automated deployment scripts that handle the installation of all prerequisites and configuration of the application to run as a service using PM2 process manager.
 
-- For Linux/Unix systems: `deploy-without-docker.sh`
-- For Windows systems: `deploy-without-docker.bat`
+##### Prerequisites
+- VPS server with either:
+  - Ubuntu 20.04 LTS or newer (Linux)
+  - Windows Server 2016 or newer (Windows)
+- At least 4GB RAM and 2 vCPUs recommended
+- Root/administrator access to the server
 
-These scripts automate the installation of all prerequisites (Node.js, MongoDB, LibreOffice) and configure the application to run as a service using PM2 process manager.
+##### For Linux VPS (Ubuntu/Debian)
 
-For detailed instructions, please refer to [DEPLOY_WITHOUT_DOCKER.md](DEPLOY_WITHOUT_DOCKER.md).
+1. Copy the OpenSign application files to your server
+2. Make the deployment script executable:
+   ```bash
+   chmod +x deploy-without-docker.sh
+   ```
+3. Run the deployment script with sudo privileges:
+   ```bash
+   sudo ./deploy-without-docker.sh
+   ```
+
+The script will automatically:
+- Install Node.js v18, MongoDB v6.0+, LibreOffice, PM2, and Nginx
+- Install backend and frontend dependencies
+- Build the frontend for production
+- Generate secure environment configuration files
+- Configure PM2 to manage the applications
+- Set up Nginx as a reverse proxy
+
+##### For Windows VPS
+
+1. Copy the OpenSign application files to your server
+2. Right-click on `deploy-without-docker.bat` and select "Run as administrator"
+3. Follow the on-screen instructions
+
+The script will automatically:
+- Install Node.js v18, MongoDB, LibreOffice, and PM2 using Chocolatey
+- Install backend and frontend dependencies
+- Build the frontend for production (using Windows-compatible build process)
+- Generate secure environment configuration files
+- Configure PM2 to manage the applications
+
+##### Post-Deployment Configuration
+
+After running the deployment script, you should:
+
+1. Update the generated `.env` files with your specific configuration:
+   - Backend: `/opt/opensign/backend/OpenSignServer/.env` (Linux) or `C:\opensign\backend\OpenSignServer\.env` (Windows)
+   - Frontend: `/opt/opensign/frontend/OpenSign/.env` (Linux) or `C:\opensign\frontend\OpenSign\.env` (Windows)
+
+2. For production use, consider:
+   - Setting up SSL certificates (Let's Encrypt recommended)
+   - Configuring a custom domain
+   - Adjusting firewall settings
+   - Setting up automated backups for MongoDB
+   - Monitoring and log management
+
+##### Accessing Your Application
+
+After deployment, your OpenSign application will be accessible at:
+- Frontend: http://your-server-ip (or your domain)
+- Backend API: http://your-server-ip/app (or your domain/app)
+
+##### Managing the Application
+
+The applications are managed using PM2. You can use these commands:
+```bash
+# View application status
+pm2 status
+
+# View application logs
+pm2 logs
+
+# Restart applications
+pm2 restart all
+
+# Stop applications
+pm2 stop all
+
+# Start applications
+pm2 start all
+```
+
+For detailed manual deployment instructions without the automated scripts, please refer to [VPS_DEPLOYMENT_GUIDE.md](VPS_DEPLOYMENT_GUIDE.md).
 
 #### Google Cloud Deployment with External IP Addresses (No Docker)
 

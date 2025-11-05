@@ -1,6 +1,6 @@
 # OpenSign VPS Deployment Guide
 
-This guide provides detailed steps for manually deploying OpenSign on a VPS server without Docker.
+This guide provides detailed steps for manually deploying OpenSign on a VPS server without Docker. For an automated deployment, please refer to the deployment scripts [deploy-without-docker.sh](deploy-without-docker.sh) (Linux) or [deploy-without-docker.bat](deploy-without-docker.bat) (Windows).
 
 ## Prerequisites
 
@@ -100,8 +100,7 @@ cat > /opt/opensign/ecosystem.config.js << EOF
 module.exports = {
   apps : [{
     name   : "opensign-backend",
-    script : "npm",
-    args   : "run dev",
+    script : "./index.js",
     cwd    : "/opt/opensign/backend/OpenSignServer",
     env: {
       NODE_ENV: "production"
@@ -109,8 +108,8 @@ module.exports = {
   },
   {
     name   : "opensign-frontend",
-    script : "npm",
-    args   : "run start",
+    script : "node",
+    args   : "server.js",
     cwd    : "/opt/opensign/frontend/OpenSign",
     env: {
       NODE_ENV: "production"
@@ -220,7 +219,7 @@ npm install
 cd "C:\opensign\frontend\OpenSign"
 npm install
 
-# Build frontend for production
+# Build frontend for production (Windows-specific command)
 npm run build-win
 ```
 
@@ -252,8 +251,7 @@ Create PM2 configuration at `C:\opensign\ecosystem.config.js`:
   "apps": [
     {
       "name": "opensign-backend",
-      "script": "npm",
-      "args": "run dev",
+      "script": "index.js",
       "cwd": "C:/opensign/backend/OpenSignServer",
       "env": {
         "NODE_ENV": "production"
@@ -261,8 +259,8 @@ Create PM2 configuration at `C:\opensign\ecosystem.config.js`:
     },
     {
       "name": "opensign-frontend",
-      "script": "npm",
-      "args": "run start",
+      "script": "node",
+      "args": "server.js",
       "cwd": "C:/opensign/frontend/OpenSign",
       "env": {
         "NODE_ENV": "production"
@@ -333,3 +331,24 @@ pm2 stop all
 # Start applications
 pm2 start all
 ```
+
+## Troubleshooting
+
+If you encounter issues:
+
+1. Check PM2 logs: `pm2 logs`
+2. Verify MongoDB is running: `systemctl status mongod` (Linux) or `net start MongoDB` (Windows)
+3. Check Nginx configuration: `nginx -t` (Linux only)
+4. Ensure all environment variables are correctly set in the .env files
+5. Verify that ports 8081 (backend) and 3000 (frontend) are not blocked by firewall
+
+## Security Considerations
+
+For production deployments, consider:
+
+1. Using strong, unique passwords and keys
+2. Restricting access to the server with firewalls
+3. Setting up SSL/TLS certificates
+4. Regularly updating the system and application dependencies
+5. Implementing proper backup strategies
+6. Monitoring logs for suspicious activity
