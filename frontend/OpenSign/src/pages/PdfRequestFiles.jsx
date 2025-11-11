@@ -323,7 +323,7 @@ function PdfRequestFiles(
             setPdfBase64Url(base64Pdf);
           }
         } else {
-          setHandleError(t("something-went-wrong-mssg"));
+          setHandleError(err?.message || t("something-went-wrong-mssg"));
         }
         setExtUserId(documentData[0]?.ExtUserPtr?.objectId);
         setOwner(documentData?.[0]?.ExtUserPtr);
@@ -486,7 +486,7 @@ function PdfRequestFiles(
             //if not then check user exist in contracts_Contactbook class and check tour message status
             const res = await contractUsers();
             if (res === "Error: Something went wrong!") {
-              setHandleError(t("something-went-wrong-mssg"));
+              setHandleError(err?.message || t("something-went-wrong-mssg"));
             } else if (res[0] && res?.length) {
               setContractName("_Users");
               currUserId = res[0].objectId;
@@ -514,7 +514,7 @@ function PdfRequestFiles(
             } else if (res?.length === 0) {
               const res = await contactBook(currUserId);
               if (res === "Error: Something went wrong!") {
-                setHandleError(t("something-went-wrong-mssg"));
+                setHandleError(err?.message || t("something-went-wrong-mssg"));
               } else if (res[0] && res.length) {
                 setContractName("_Contactbook");
                 const objectId = res[0].objectId;
@@ -559,19 +559,19 @@ function PdfRequestFiles(
         if (documentData?.result?.error?.includes("deleted")) {
           setHandleError(t("document-deleted"));
         } else {
-          setHandleError(t("something-went-wrong-mssg"));
+          setHandleError(err?.message || t("something-went-wrong-mssg"));
         }
         setIsLoading({ isLoad: false });
         console.log("err in  getDocument cloud function ");
       } else {
-        setHandleError(t("no-data"));
+        setHandleError(err?.message || t("no-data"));
         setIsUiLoading(false);
         setIsLoading({ isLoad: false });
       }
       setIsLoading({ isLoad: false });
     } catch (err) {
       console.log("Error: error in getDocumentDetails", err);
-      setHandleError(t("something-went-wrong-mssg"));
+      setHandleError(err?.message || t("something-went-wrong-mssg"));
       setIsLoading({ isLoad: false });
     }
   };
@@ -644,7 +644,7 @@ function PdfRequestFiles(
         isEmailVerified = currentUser?.emailVerified;
       } catch (err) {
         console.log("err in get email verification ", err);
-        setHandleError(t("something-went-wrong-mssg"));
+        setHandleError(err?.message || t("something-went-wrong-mssg"));
         setIsUiLoading(false);
       }
     }
@@ -702,7 +702,7 @@ function PdfRequestFiles(
               if (documentData?.result?.error?.includes("deleted")) {
                 setHandleError(t("document-deleted"));
               } else {
-                setHandleError(t("something-went-wrong-mssg"));
+                setHandleError(err?.message || t("something-went-wrong-mssg"));
               }
             } else {
               setHandleError("Document not Found!");
@@ -917,7 +917,7 @@ function PdfRequestFiles(
                 console.log("err in request signing", err);
                 setIsAlert({
                   isShow: true,
-                  alertMessage: t("something-went-wrong-mssg")
+                  alertMessage: err?.message || t("something-went-wrong-mssg")
                 });
               }
             }
@@ -925,7 +925,7 @@ function PdfRequestFiles(
         } else {
           setIsAlert({
             isShow: true,
-            alertMessage: t("something-went-wrong-mssg")
+            alertMessage: err?.message || t("something-went-wrong-mssg")
           });
           setIsUiLoading(false);
         }
@@ -934,7 +934,7 @@ function PdfRequestFiles(
         setIsUiLoading(false);
         setIsAlert({
           isShow: true,
-          alertMessage: t("something-went-wrong-mssg")
+          alertMessage: err?.message || t("something-went-wrong-mssg")
         });
       }
     }
@@ -1126,7 +1126,7 @@ function PdfRequestFiles(
         setIsAlert({
           title: "Error",
           isShow: true,
-          alertMessage: t("something-went-wrong-mssg")
+          alertMessage: err?.message || t("something-went-wrong-mssg")
         });
       });
   };
